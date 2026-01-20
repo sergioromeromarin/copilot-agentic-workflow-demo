@@ -1,0 +1,6 @@
+
+### Ping
+GET {{baseUrl}}/ping
+
+### Weather Forecast
+GET {{baseUrl}}/weatherforecast

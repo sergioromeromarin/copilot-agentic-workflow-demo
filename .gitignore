@@ -1,0 +1,21 @@
+
+# Compilados
+bin/
+obj/
+
+# Configuración de usuario
+*.user
+*.suo
+
+# Publicaciones
+**/Properties/PublishProfiles/
+
+# Archivos de VS Code
+.vscode/
+
+# Archivos temporales
+*.tmp
+*.log
+
+# Paquetes NuGet
+**/packages/

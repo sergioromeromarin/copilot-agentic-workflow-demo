@@ -1,0 +1,44 @@
+{
+  "info": {
+    "name": "Copilot Demo API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET /ping",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/ping",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ping"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /weatherforecast",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/weatherforecast",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "weatherforecast"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://localhost:5001"
+    }
+  ]
+}
