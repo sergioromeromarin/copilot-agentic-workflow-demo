@@ -3,11 +3,30 @@
 
 Este repositorio incluye una API mínima en .NET 8 y la configuración necesaria para trabajar con **GitHub Copilot** usando **agentes orquestados**.
 
+## 🚀 Nuevas Características (Testing Branch)
+- ✅ **Health Check endpoint** para monitoring
+- ✅ **Users API endpoint** para testing
+- ✅ **Controller-based endpoints** además de Minimal API
+- ✅ **GitHub Actions workflows** con múltiples agentes
+- ✅ **Automated testing** en rama de testing
+
 ## Requisitos previos
 - .NET 8 SDK
 - Git
 - Visual Studio Code
 - Cuenta GitHub con **GitHub Copilot** activo
+
+## 🎯 Endpoints Disponibles
+
+### Minimal API Endpoints
+- `GET /ping` - Simple ping/pong response
+- `GET /weatherforecast` - Weather forecast data
+- `GET /health` - ⭐ **NEW** Application health status
+- `GET /users` - ⭐ **NEW** Users list
+
+### Controller-based Endpoints  
+- `GET /api/WeatherForecast` - ⭐ **NEW** Weather via controller
+- `GET /api/WeatherForecast/{date}` - ⭐ **NEW** Weather by date
 
 ## Puesta en marcha
 ```bash
