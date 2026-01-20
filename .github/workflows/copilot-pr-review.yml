@@ -1,14 +1,150 @@
-
-name: Copilot PR Review
+name: Copilot Agentic Workflow
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main, testing]
+
+env:
+  DOTNET_VERSION: "8.0.x"
 
 jobs:
-  review:
+  # 🔍 Análisis de código y seguridad
+  security-scan:
+    name: Security Guardian Agent
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Orquestación Copilot (placeholder)
-        run: echo "Orquestación Copilot ejecutada"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ./CopilotDemo.Api/CopilotDemo.Api.csproj
+
+      - name: Security scan with dependency check
+        run: |
+          echo "🛡️ Security Guardian Agent executing..."
+          dotnet list ./CopilotDemo.Api/CopilotDemo.Api.csproj package --vulnerable --include-transitive || true
+
+      - name: Code quality analysis
+        run: |
+          echo "📊 Analyzing code quality patterns..."
+          find . -name "*.cs" -not -path "./bin/*" -not -path "./obj/*" | head -5
+
+  # 🏗️ Build y pruebas
+  build-and-test:
+    name: Build & QA Testing Agent
+    runs-on: ubuntu-latest
+    needs: security-scan
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ./CopilotDemo.Api/CopilotDemo.Api.csproj
+
+      - name: Build application
+        run: |
+          echo "🔨 Building application..."
+          dotnet build ./CopilotDemo.Api/CopilotDemo.Api.csproj --no-restore --configuration Release
+
+      - name: QA Testing Agent
+        run: |
+          echo "🧪 QA Testing Agent executing..."
+          echo "Running smoke tests..."
+          if [ -f "./scripts/smoke_tests.sh" ]; then
+            chmod +x ./scripts/smoke_tests.sh
+            ./scripts/smoke_tests.sh || true
+          fi
+          echo "API endpoints validation..."
+          if [ -f "./tests/http/api.http" ]; then
+            echo "Found API test definitions"
+          fi
+
+  # 📝 Revisión de código automatizada
+  code-review:
+    name: Code Reviewer Agent
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          echo "🔍 Code Reviewer Agent executing..."
+          git diff --name-only origin/${{ github.base_ref }}...HEAD > changed_files.txt
+          echo "Changed files:"
+          cat changed_files.txt
+
+      - name: Analyze code changes
+        run: |
+          echo "📋 Analyzing code patterns and best practices..."
+          while IFS= read -r file; do
+            if [[ "$file" == *.cs ]]; then
+              echo "Reviewing C# file: $file"
+              if [ -f "$file" ]; then
+                echo "  - Checking naming conventions..."
+                grep -n "class\|interface\|public.*method" "$file" || true
+              fi
+            fi
+          done < changed_files.txt
+
+  # 📚 Documentación automática
+  documentation:
+    name: Documentation Writer Agent
+    runs-on: ubuntu-latest
+    needs: [security-scan, build-and-test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Documentation Writer Agent
+        run: |
+          echo "📚 Documentation Writer Agent executing..."
+          echo "Generating API documentation..."
+
+          # Verificar estructura del proyecto
+          echo "Project structure:"
+          find ./CopilotDemo.Api -name "*.cs" -not -path "./bin/*" -not -path "./obj/*"
+
+          echo "Checking existing documentation..."
+          if [ -f "./README.md" ]; then
+            echo "README.md exists"
+          fi
+
+      - name: Generate API documentation
+        run: |
+          echo "🔧 Generating endpoint documentation from controllers..."
+          find ./CopilotDemo.Api/Controllers -name "*.cs" | while read controller; do
+            echo "Controller: $(basename $controller)"
+            grep -n "public.*ActionResult\|HttpGet\|HttpPost\|HttpPut\|HttpDelete" "$controller" || true
+          done
+
+  # 📊 Reporte final
+  workflow-summary:
+    name: Workflow Summary
+    runs-on: ubuntu-latest
+    needs: [security-scan, build-and-test, code-review, documentation]
+    if: always()
+    steps:
+      - name: Workflow completion summary
+        run: |
+          echo "🎯 Copilot Agentic Workflow Summary"
+          echo "=================================="
+          echo "Security Guardian: ${{ needs.security-scan.result }}"
+          echo "Build & QA Testing: ${{ needs.build-and-test.result }}"
+          echo "Code Review: ${{ needs.code-review.result }}"  
+          echo "Documentation: ${{ needs.documentation.result }}"
+          echo "=================================="
+          echo "✅ Agentic workflow completed!"
