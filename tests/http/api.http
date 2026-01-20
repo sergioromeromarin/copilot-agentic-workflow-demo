@@ -4,3 +4,18 @@ GET {{baseUrl}}/ping
 
 ### Weather Forecast
 GET {{baseUrl}}/weatherforecast
+
+### Health Check (New for testing)
+GET {{baseUrl}}/health
+
+### Users List (New for testing) 
+GET {{baseUrl}}/users
+
+### Weather Forecast Controller
+GET {{baseUrl}}/api/WeatherForecast
+
+### Weather Forecast by Date
+GET {{baseUrl}}/api/WeatherForecast/2026-01-25
+
+### Variables
+@baseUrl = https://localhost:7000

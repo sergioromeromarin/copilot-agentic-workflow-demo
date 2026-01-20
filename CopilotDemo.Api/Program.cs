@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Servicios básicos: explorador de endpoints y Swagger
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddControllers(); // Habilitar controladores para testing
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -23,6 +24,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapControllers(); // Mapear controladores
 
 // Endpoint de ejemplo: WeatherForecast (similar al template)
 string[] summaries = new[]
@@ -48,6 +51,35 @@ app.MapGet("/weatherforecast", () =>
 app.MapGet("/ping", () => Results.Ok(new { pong = true, at = DateTime.UtcNow }))
    .WithName("Ping")
    .WithOpenApi();
+
+// Nuevo endpoint de health check para testing
+app.MapGet("/health", () =>
+{
+    var healthStatus = new
+    {
+        status = "healthy",
+        version = "1.0.0",
+        timestamp = DateTime.UtcNow,
+        uptime = Environment.TickCount64,
+        environment = app.Environment.EnvironmentName
+    };
+    return Results.Ok(healthStatus);
+})
+.WithName("HealthCheck")
+.WithOpenApi();
+
+// Endpoint básico de usuarios para testing
+app.MapGet("/users", () =>
+{
+    var users = new[] {
+        new { id = 1, name = "Juan Pérez", email = "juan@example.com" },
+        new { id = 2, name = "María García", email = "maria@example.com" },
+        new { id = 3, name = "Carlos López", email = "carlos@example.com" }
+    };
+    return Results.Ok(users);
+})
+.WithName("GetUsers")
+.WithOpenApi();
 
 app.Run();
 
