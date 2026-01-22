@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +16,30 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Configurar CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+// Agregar health checks
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
+
+// HTTPS redirection en producción
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+// Habilitar CORS
+app.UseCors();
 
 // Swagger solo en Desarrollo
 if (app.Environment.IsDevelopment())
@@ -49,10 +73,14 @@ app.MapGet("/ping", () => Results.Ok(new { pong = true, at = DateTime.UtcNow }))
    .WithName("Ping")
    .WithOpenApi();
 
+// Health check endpoint
+app.MapHealthChecks("/health")
+   .WithName("HealthCheck");
+
 app.Run();
 
 // Tipo record para el ejemplo
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    public int TemperatureF => 32 + (int)(TemperatureC * 9 / 5);
 }
