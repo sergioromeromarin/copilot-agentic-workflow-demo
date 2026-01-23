@@ -1,3 +1,36 @@
+### Prueba POST válido
+POST http://localhost:5000/api/products
+Content-Type: application/json
+
+{
+	"name": "Test Product",
+	"price": 99.99,
+	"currency": "EUR"
+}
+
+### Prueba POST inválido (name largo)
+POST http://localhost:5000/api/products
+Content-Type: application/json
+
+{
+	"name": "Producto con nombre muy largo que excede el límite configurado en appsettings.json y debe fallar",
+	"price": 10.0
+}
+
+### Prueba POST inválido (precio fuera de rango)
+POST http://localhost:5000/api/products
+Content-Type: application/json
+
+{
+	"name": "Barato",
+	"price": 0.001
+}
+
+### Prueba GET por id
+GET http://localhost:5000/api/products/{{id}}
+
+### Prueba GET listado
+GET http://localhost:5000/api/products
 
 ### Ping
 GET {{baseUrl}}/ping

@@ -6,6 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Servicios básicos: explorador de endpoints y Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers(); // Habilitar controladores para testing
+builder.Services.Configure<CopilotDemo.Api.Options.ProductsOptions>(
+    builder.Configuration.GetSection("Products")
+);
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
